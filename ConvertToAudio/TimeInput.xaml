@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="ConvertToAudio.TimeInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="18">
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <TextBox Name="tb_Hours" Text="00" GotFocus="tb_GotFocus" ToolTip="Hours" LostFocus="tb_LostFocus"/>
+            <Label Content=":"/>
+            <TextBox Name="tb_Minutes" Text="00" GotFocus="tb_GotFocus" ToolTip="Minutes" LostFocus="tb_LostFocus"/>
+            <Label Content=":"/>
+            <TextBox Name="tb_Seconds" Text="00" GotFocus="tb_GotFocus" ToolTip="Seconds" LostFocus="tb_LostFocus"/>
+            <Label Content="."/>
+            <TextBox Name="tb_Milliseconds" Text="0000" GotFocus="tb_GotFocus" ToolTip="Milliseconds" LostFocus="tb_LostFocus"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
