@@ -91,8 +91,30 @@ namespace ConvertToAudio
                 textBox.Text = textBox.Text.Remove(maxLength - 1, textBox.Text.Length - maxLength);
 
             textBox.MaxLength = maxLength;
+
+            // fix text to contain zeroes
+            int n;
+            int.TryParse(textBox.Text, out n);
+            textBox.Text = (maxLength == 2) ? string.Format("{0:00}", n) : string.Format("{0:0000}", n);
         }
 
+        private void tb_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (TextBoxInputLimits == null)
+                return;
+
+            TextBox textBox = sender as TextBox;
+            int maxLength = TextBoxInputLimits[textBox];
+
+            if (textBox.Text.Length >= maxLength)
+            {
+                textBox.Text = textBox.Text.Remove(maxLength - 1, textBox.Text.Length - maxLength);
+
+                if (textBox.CaretIndex >= maxLength)
+                    textBox.CaretIndex = 0;
+            }
+
+        }
     }
 }
 
