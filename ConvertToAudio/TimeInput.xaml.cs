@@ -92,7 +92,7 @@ namespace ConvertToAudio
 
             textBox.MaxLength = maxLength;
 
-            // fix text to contain zeroes
+            // Format text to always contain leading zeroes (bit hacky)
             int n;
             int.TryParse(textBox.Text, out n);
             textBox.Text = (maxLength == 2) ? string.Format("{0:00}", n) : string.Format("{0:0000}", n);
