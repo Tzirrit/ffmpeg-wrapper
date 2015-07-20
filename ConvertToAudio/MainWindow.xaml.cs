@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,6 +13,9 @@ namespace ConvertToAudio
     public partial class MainWindow : Window
     {
         const string APP_PATH = @"External\ffmpeg.exe";
+        const string TEMP_PATH = @"\temp";
+
+        string tempPath;
 
         public MainWindow()
         {
@@ -23,6 +25,10 @@ namespace ConvertToAudio
             tb_Log.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
 
             btn_Convert.IsEnabled = false;
+
+            // Create temp conversion folder if not existing
+            tempPath = Directory.GetCurrentDirectory() + TEMP_PATH;
+            Directory.CreateDirectory(tempPath);
         }
 
         /// <summary>
@@ -32,9 +38,8 @@ namespace ConvertToAudio
         /// <param name="args"></param>
         void CallConsoleApp(string appPath, string[] args = null)
         {
-            WriteLog(string.Format("Starting '{0}'", appPath));
-
-            string command = " -h"; //common help flag for console apps
+            string command = " " + string.Join(" ", args); //" -h"; //common help flag for console apps
+            WriteLog(command);
 
             // Create process
             Process process = new Process();
@@ -91,7 +96,33 @@ namespace ConvertToAudio
 
             if (File.Exists(tb_SourceFile.Text.Trim()))
             {
-                CallConsoleApp(fullAppPath);
+                // Copy file to temp directory
+                string sourceFile = Path.GetFileName(tb_SourceFile.Text);
+                string tempIn = string.Format(@"{0}\{1}", tempPath, sourceFile);
+                File.Copy(tb_SourceFile.Text, tempIn, true);
+
+                string startTime = "0";
+                string duration = "15";
+                string tempOut = string.Format(@"{0}\{1}.wav", tempPath, Path.GetFileNameWithoutExtension(tempIn));
+
+                // Build the command parameters
+                string[] args = new string[7];
+                args[0] = string.Format("-i \"{0}\"", tempIn);
+                args[1] = string.Format("-ss {0}", startTime);
+                args[2] = string.Format("-t {0}", duration);
+                args[3] = "-ac 1";
+                args[4] = "-ar 11025";
+                args[5] = "-y";                                 // Force override
+                args[6] = string.Format("\"{0}\"", tempOut);
+
+
+                // Call ffmpeg to convert file
+                CallConsoleApp(fullAppPath, args);
+
+                // Copy converted file back to origin (append "(x)" if already existing)
+
+                // Delete temp file
+                //File.Delete(tempFile);
             }
             else
             {
@@ -100,7 +131,7 @@ namespace ConvertToAudio
         }
 
         /// <summary>
-        /// 
+        /// Browser files on computer and select target source file
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -127,7 +158,7 @@ namespace ConvertToAudio
         }
 
         /// <summary>
-        /// 
+        /// Appends given string to the log textbox
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="linebreak"></param>
@@ -167,6 +198,8 @@ namespace ConvertToAudio
 
             if (File.Exists(tb_SourceFile.Text.Trim()))
             {
+                // ToDo: Add format validation (against list of valid file types).
+
                 tb_SourceFile.ToolTip = tb_SourceFile.Text.Trim();
                 btn_Convert.IsEnabled = true;
             }

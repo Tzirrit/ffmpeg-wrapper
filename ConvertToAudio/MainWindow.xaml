@@ -13,8 +13,8 @@
             <StackPanel Orientation="Horizontal">
                 <Label Content="Start:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <custom:TimeInput/>
-                <Label Content="Duration:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 
+                <Label Content="Duration:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Button x:Name="btn_Convert" Content="Convert" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" Click="btn_Convert_Click"/>
             </StackPanel>
                 <TextBox x:Name="tb_Log" TextWrapping="Wrap" Height="260"/>
