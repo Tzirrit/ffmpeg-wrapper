@@ -22,7 +22,17 @@ namespace ConvertToAudio
             AllowOverride(tb_Hours, 2);
             AllowOverride(tb_Minutes, 2);
             AllowOverride(tb_Seconds, 2);
-            AllowOverride(tb_Milliseconds, 4);
+            AllowOverride(tb_Milliseconds, 3);
+        }
+
+        /// <summary>
+        /// Returns time in format hh:mm:ss[.xxx].
+        /// </summary>
+        /// <returns></returns>
+        public string GetTimeAsString()
+        {
+            return string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                tb_Hours.Text, tb_Minutes.Text, tb_Seconds.Text, tb_Milliseconds.Text);
         }
 
         void AllowOverride(TextBox textBox, int maxLength)
@@ -53,7 +63,7 @@ namespace ConvertToAudio
             }
         }
 
-        private void tb_GotFocus(object sender, RoutedEventArgs e)
+        void tb_GotFocus(object sender, RoutedEventArgs e)
         {
             if (TextBoxInputLimits == null)
                 return;
@@ -68,7 +78,7 @@ namespace ConvertToAudio
             }
         }
 
-        private void tb_LostFocus(object sender, RoutedEventArgs e)
+        void tb_LostFocus(object sender, RoutedEventArgs e)
         {
             if (TextBoxInputLimits == null)
                 return;
@@ -84,10 +94,10 @@ namespace ConvertToAudio
             // Format text to always contain leading zeroes (bit hacky)
             int n;
             int.TryParse(textBox.Text, out n);
-            textBox.Text = (maxLength == 2) ? string.Format("{0:00}", n) : string.Format("{0:0000}", n);
+            textBox.Text = (maxLength == 2) ? string.Format("{0:00}", n) : string.Format("{0:000}", n);
         }
 
-        private void tb_KeyUp(object sender, KeyEventArgs e)
+        void tb_KeyUp(object sender, KeyEventArgs e)
         {
             if (TextBoxInputLimits == null)
                 return;
