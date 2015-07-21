@@ -16,6 +16,8 @@ namespace ConvertToAudio
         const string TEMP_PATH = @"\temp";
 
         string tempPath;
+        bool VerboseLoggingEnabled = true;
+        bool CleanUpEnabled = false;
 
         public MainWindow()
         {
@@ -39,7 +41,9 @@ namespace ConvertToAudio
         void CallConsoleApp(string appPath, string[] args = null)
         {
             string command = " " + string.Join(" ", args); //" -h"; //common help flag for console apps
-            WriteLog(command);
+
+            if (VerboseLoggingEnabled)
+                WriteLog(command);
 
             // Create process
             Process process = new Process();
@@ -82,7 +86,8 @@ namespace ConvertToAudio
         /// <param name="e"></param>
         void process_Exited(object sender, EventArgs e)
         {
-            WriteLog("Exited");
+            if (VerboseLoggingEnabled)
+                WriteLog("Conversion Done. Process exited.");
         }
 
         /// <summary>
@@ -97,13 +102,16 @@ namespace ConvertToAudio
             if (File.Exists(tb_SourceFile.Text.Trim()))
             {
                 // Copy file to temp directory
-                string sourceFile = Path.GetFileName(tb_SourceFile.Text);
-                string tempIn = string.Format(@"{0}\{1}", tempPath, sourceFile);
+                string sourceFileName = Path.GetFileName(tb_SourceFile.Text);
+                string sourceDirectory = Path.GetDirectoryName(tb_SourceFile.Text);
+                string tempIn = string.Format(@"{0}\{1}", tempPath, sourceFileName);
                 File.Copy(tb_SourceFile.Text, tempIn, true);
 
-                string startTime = "0";
-                string duration = "15";
-                string tempOut = string.Format(@"{0}\{1}.wav", tempPath, Path.GetFileNameWithoutExtension(tempIn));
+                string destinationFileName = Path.GetFileNameWithoutExtension(tempIn);
+                string tempOut = string.Format(@"{0}\{1}.wav", tempPath, destinationFileName);
+
+                string startTime = "0"; // DEBUG VALUE
+                string duration = "15"; // DEBUG VALUE
 
                 // Build the command parameters
                 string[] args = new string[7];
@@ -120,9 +128,48 @@ namespace ConvertToAudio
                 CallConsoleApp(fullAppPath, args);
 
                 // Copy converted file back to origin (append "(x)" if already existing)
+                string destinationPath = string.Format(@"{0}\{1}.wav", sourceDirectory, destinationFileName);
 
-                // Delete temp file
-                //File.Delete(tempFile);
+                int suffix = 1;
+                while (File.Exists(destinationPath))
+                {
+                    destinationPath = string.Format(@"{0}\{1}({2}).wav", sourceDirectory, destinationFileName, suffix);
+                    suffix++;
+                }
+
+                File.Copy(tempOut, destinationPath);
+                WriteLog(string.Format("Saved converted file to '{0}'.", destinationPath));
+
+                // Delete temp files if enabled
+                if (CleanUpEnabled)
+                {
+                    // TempIn
+                    if (VerboseLoggingEnabled)
+                        WriteLog(string.Format("Deleting temporary input file '{0}'...", tempIn));
+
+                    try
+                    {
+                        File.Delete(tempIn);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog(string.Format("Could not delete temporary input file '{0}': {1}", tempIn, ex.Message));
+                    }
+
+                    // TempOut
+                    if (VerboseLoggingEnabled)
+                        WriteLog(string.Format("Deleting temporary output file '{0}'...", tempOut));
+
+                    try
+                    {
+                        File.Delete(tempOut);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteLog(string.Format("Could not delete temporary output file '{0}': {1}", tempOut, ex.Message));
+                    }
+                }
+
             }
             else
             {
