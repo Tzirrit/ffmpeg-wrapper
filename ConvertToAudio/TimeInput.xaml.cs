@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ConvertToAudio
 {
@@ -33,7 +22,17 @@ namespace ConvertToAudio
             AllowOverride(tb_Hours, 2);
             AllowOverride(tb_Minutes, 2);
             AllowOverride(tb_Seconds, 2);
-            AllowOverride(tb_Milliseconds, 4);
+            AllowOverride(tb_Milliseconds, 3);
+        }
+
+        /// <summary>
+        /// Returns time in format hh:mm:ss[.xxx].
+        /// </summary>
+        /// <returns></returns>
+        public string GetTimeAsString()
+        {
+            return string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                tb_Hours.Text, tb_Minutes.Text, tb_Seconds.Text, tb_Milliseconds.Text);
         }
 
         void AllowOverride(TextBox textBox, int maxLength)
@@ -64,7 +63,7 @@ namespace ConvertToAudio
             }
         }
 
-        private void tb_GotFocus(object sender, RoutedEventArgs e)
+        void tb_GotFocus(object sender, RoutedEventArgs e)
         {
             if (TextBoxInputLimits == null)
                 return;
@@ -79,7 +78,7 @@ namespace ConvertToAudio
             }
         }
 
-        private void tb_LostFocus(object sender, RoutedEventArgs e)
+        void tb_LostFocus(object sender, RoutedEventArgs e)
         {
             if (TextBoxInputLimits == null)
                 return;
@@ -91,8 +90,30 @@ namespace ConvertToAudio
                 textBox.Text = textBox.Text.Remove(maxLength - 1, textBox.Text.Length - maxLength);
 
             textBox.MaxLength = maxLength;
+
+            // Format text to always contain leading zeroes (bit hacky)
+            int n;
+            int.TryParse(textBox.Text, out n);
+            textBox.Text = (maxLength == 2) ? string.Format("{0:00}", n) : string.Format("{0:000}", n);
         }
 
+        void tb_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (TextBoxInputLimits == null)
+                return;
+
+            TextBox textBox = sender as TextBox;
+            int maxLength = TextBoxInputLimits[textBox];
+
+            if (textBox.Text.Length >= maxLength)
+            {
+                textBox.Text = textBox.Text.Remove(maxLength - 1, textBox.Text.Length - maxLength);
+
+                if (textBox.CaretIndex >= maxLength)
+                    textBox.CaretIndex = 0;
+            }
+
+        }
     }
 }
 

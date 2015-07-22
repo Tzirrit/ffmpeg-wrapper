@@ -6,13 +6,13 @@
              mc:Ignorable="d" Height="18">
     <Grid>
         <StackPanel Orientation="Horizontal">
-            <TextBox Name="tb_Hours" Text="00" GotFocus="tb_GotFocus" ToolTip="Hours" LostFocus="tb_LostFocus"/>
-            <Label Content=":"/>
-            <TextBox Name="tb_Minutes" Text="00" GotFocus="tb_GotFocus" ToolTip="Minutes" LostFocus="tb_LostFocus"/>
-            <Label Content=":"/>
-            <TextBox Name="tb_Seconds" Text="00" GotFocus="tb_GotFocus" ToolTip="Seconds" LostFocus="tb_LostFocus"/>
-            <Label Content="."/>
-            <TextBox Name="tb_Milliseconds" Text="0000" GotFocus="tb_GotFocus" ToolTip="Milliseconds" LostFocus="tb_LostFocus"/>
+            <TextBox x:Name="tb_Hours" Text="00" GotFocus="tb_GotFocus" ToolTip="Hours" LostFocus="tb_LostFocus" Width="19" KeyUp="tb_KeyUp"/>
+            <Label Content=":" Margin="0,-5,0,0"/>
+            <TextBox x:Name="tb_Minutes" Text="00" GotFocus="tb_GotFocus" ToolTip="Minutes" LostFocus="tb_LostFocus" Width="19" KeyUp="tb_KeyUp"/>
+            <Label Content=":" Margin="0,-5,0,0"/>
+            <TextBox x:Name="tb_Seconds" Text="00" GotFocus="tb_GotFocus" ToolTip="Seconds" LostFocus="tb_LostFocus" Width="19" KeyUp="tb_KeyUp"/>
+            <Label Content="." Margin="0,-5,0,0"/>
+            <TextBox x:Name="tb_Milliseconds" Text="000" GotFocus="tb_GotFocus" ToolTip="Milliseconds" LostFocus="tb_LostFocus" KeyUp="tb_KeyUp" Width="25"/>
         </StackPanel>
     </Grid>
 </UserControl>
