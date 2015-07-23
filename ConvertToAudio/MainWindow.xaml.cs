@@ -43,7 +43,7 @@ namespace ConvertToAudio
         /// <param name="e"></param>
         void btn_Convert_Click(object sender, RoutedEventArgs e)
         {
-            string fullAppPath = System.IO.Path.GetFullPath(APP_PATH);
+            string fullAppPath = Path.GetFullPath(APP_PATH);
 
             if (File.Exists(tb_SourceFile.Text.Trim()))
             {
