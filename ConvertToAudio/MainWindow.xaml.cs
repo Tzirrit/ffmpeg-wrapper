@@ -15,9 +15,9 @@ namespace ConvertToAudio
         const string APP_PATH = @"External\ffmpeg.exe";
         const string TEMP_PATH = @"\temp";
 
-        string tempPath;
-        bool IsVerboseLoggingEnabled = true;    // TODO: make configurable in tool
-        bool IsCleanUpEnabled = true;           // TODO: make configurable in tool
+        private string _tempPath;
+        private bool _isVerboseLoggingEnabled = true;    // TODO: make configurable in tool
+        private bool _isCleanUpEnabled = true;           // TODO: make configurable in tool
 
         public MainWindow()
         {
@@ -32,8 +32,8 @@ namespace ConvertToAudio
             ti_duration.IsEnabled = false;
 
             // Create temp conversion folder if not existing
-            tempPath = Directory.GetCurrentDirectory() + TEMP_PATH;
-            Directory.CreateDirectory(tempPath);
+            _tempPath = Directory.GetCurrentDirectory() + TEMP_PATH;
+            Directory.CreateDirectory(_tempPath);
         }
 
         /// <summary>
@@ -50,11 +50,11 @@ namespace ConvertToAudio
                 // Copy file to temp directory
                 string sourceFileName = Path.GetFileName(tb_SourceFile.Text);
                 string sourceDirectory = Path.GetDirectoryName(tb_SourceFile.Text);
-                string tempIn = string.Format(@"{0}\{1}", tempPath, sourceFileName);
+                string tempIn = string.Format(@"{0}\{1}", _tempPath, sourceFileName);
                 File.Copy(tb_SourceFile.Text, tempIn, true);
 
                 string destinationFileName = Path.GetFileNameWithoutExtension(tempIn);
-                string tempOut = string.Format(@"{0}\{1}.wav", tempPath, destinationFileName);
+                string tempOut = string.Format(@"{0}\{1}.wav", _tempPath, destinationFileName);
 
                 string startTime = ti_startTime.GetTimeAsString();
                 string duration = ti_duration.GetTimeAsString();
@@ -71,7 +71,6 @@ namespace ConvertToAudio
                 args[5] = "-y";                                 // Force override
                 args[6] = "-hide_banner";                       // Hide unrequired output
                 args[7] = string.Format("\"{0}\"", tempOut);
-
 
                 // Call ffmpeg to convert file
                 CallConsoleApp(fullAppPath, args);
@@ -101,10 +100,10 @@ namespace ConvertToAudio
                 }
 
                 // Delete temp files if enabled and copying was successful
-                if (IsCleanUpEnabled && wasSuccessful)
+                if (_isCleanUpEnabled && wasSuccessful)
                 {
                     // TempIn
-                    if (IsVerboseLoggingEnabled)
+                    if (_isVerboseLoggingEnabled)
                         WriteLog(string.Format("Deleting temporary input file '{0}'...", tempIn));
 
                     try
@@ -117,7 +116,7 @@ namespace ConvertToAudio
                     }
 
                     // TempOut
-                    if (IsVerboseLoggingEnabled)
+                    if (_isVerboseLoggingEnabled)
                         WriteLog(string.Format("Deleting temporary output file '{0}'...", tempOut));
 
                     try
@@ -129,7 +128,6 @@ namespace ConvertToAudio
                         WriteLog(string.Format("Could not delete temporary output file '{0}': {1}", tempOut, ex.Message));
                     }
                 }
-
             }
             else
             {
@@ -145,9 +143,9 @@ namespace ConvertToAudio
         /// <param name="args"></param>
         void CallConsoleApp(string appPath, string[] args = null)
         {
-            string command = " " + string.Join(" ", args); //" -h"; //common help flag for console apps
+            string command = " " + string.Join(" ", args);
 
-            if (IsVerboseLoggingEnabled)
+            if (_isVerboseLoggingEnabled)
                 WriteLog(string.Format("Parameters: {0}", command));
 
             // Create process
@@ -190,7 +188,7 @@ namespace ConvertToAudio
         /// <param name="e"></param>
         void process_Exited(object sender, EventArgs e)
         {
-            if (IsVerboseLoggingEnabled)
+            if (_isVerboseLoggingEnabled)
                 WriteLog("Conversion Done. Process exited.");
         }
         #endregion
